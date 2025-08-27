@@ -1,9 +1,9 @@
 import './App.css';
-import Puzzle from "./components/Maze"
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
-    <Puzzle/>
+    <Dashboard />
   );
 }
 

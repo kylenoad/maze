@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Tile from "./Tile";
 
-const maze = [
-  ["S", "W", "W", "W", "W", "W", "W", "W"],
-  ["", "W", "", "", "", "", "", ""],
-  ["", "W", "", "W", "W", "W", "W", ""],
-  ["", "W", "", "", "P1", "W", "", ""],
-  ["", "W", "D", "W", "W", "", "", "W"],
-  ["", "w", "G", "W", "", "", "W", "P2"],
-  ["", "W", "W", "W", "", "W", "W", "K"],
-  ["", "", "", "", "", "", "", "W"],
-];
-
 const findPortal = (maze, portal) => {
   for (let row = 0; row < maze.length; row++) {
     for (let col = 0; col < maze[row].length; col++) {
@@ -21,12 +10,35 @@ const findPortal = (maze, portal) => {
   return null;
 };
 
-const MazeGame = () => {
+const MazeGame = ({ mazeId }) => {
+  const [maze, setMaze] = useState([]);
   const [position, setPosition] = useState([0, 0]);
   const [message, setMessage] = useState("");
   const [hasKey, setHasKey] = useState(false);
 
   useEffect(() => {
+    const fetchMaze = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/mazes/${mazeId}`);
+        if (!response.ok) throw new Error("Failed to fetch maze");
+        const data = await response.json();
+        // console.log(data);
+        setMaze(data.grid);
+        setPosition([0, 0]);
+        setHasKey(false);
+        setMessage("");
+      } catch (err) {
+        console.error(err);
+        setMessage("Error loading maze");
+      }
+    };
+
+    fetchMaze();
+  }, [mazeId]);
+
+  useEffect(() => {
+    if (!maze.length) return;
+
     const handleKeyDown = (e) => {
       let row = position[0];
       let col = position[1];
@@ -94,7 +106,7 @@ const MazeGame = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [position, hasKey]);
+  }, [position, hasKey, maze]);
 
   return (
     <div>
