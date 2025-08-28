@@ -2,10 +2,6 @@
 
 A full-stack maze-solving game with user authentication, built using:
 
-- **FastAPI** for the backend
-- **PostgreSQL** for data storage
-- **React** for the frontend interface
-
 ### Backend
 
 - FastAPI REST API
