@@ -123,5 +123,5 @@ On the backend, I implemented logic to validate the moves. The frontend collects
 
 To protect maze endpoints and ensure only registered users can access them, I implemented token-based authentication.
 
-- To store passwords securely, I used passlib with the bcrypt algorithm so that passwords are hashed before storing in the database.
+To store passwords securely, I used passlib with the bcrypt algorithm so that passwords are hashed before storing in the database.
 
