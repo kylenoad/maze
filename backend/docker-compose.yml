@@ -2,6 +2,10 @@ services:
   db:
     image: postgres:15
     environment:
+
+# NOTE: The database credentials are hardcoded here for ease of local setup
+# In a production I would move these values to a .env file
+
       POSTGRES_USER: maze_user
       POSTGRES_PASSWORD: maze_pass
       POSTGRES_DB: maze_db

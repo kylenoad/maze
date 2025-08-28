@@ -6,3 +6,6 @@ python-dotenv
 alembic
 pytest
 pydantic
+passlib[bcrypt]
+python-jose[cryptography]
+PyJWT

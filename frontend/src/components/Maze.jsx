@@ -20,7 +20,12 @@ const MazeGame = ({ mazeId }) => {
   useEffect(() => {
     const fetchMaze = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/mazes/${mazeId}`);
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:8000/mazes/${mazeId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch maze");
         const data = await response.json();
         setMaze(data.grid);
@@ -123,14 +128,14 @@ const MazeGame = ({ mazeId }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [position, hasKey, maze, moves]);
 
-  const submitMoves = async (finalMoves) => {
+  const submitMoves = async (movesToSubmit) => {
     try {
       const response = await fetch(
         `http://localhost:8000/mazes/${mazeId}/verify`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ moves: finalMoves || moves }),
+          body: JSON.stringify({ moves: movesToSubmit }),
         }
       );
       const result = await response.json();
