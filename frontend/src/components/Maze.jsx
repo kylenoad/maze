@@ -15,6 +15,7 @@ const MazeGame = ({ mazeId }) => {
   const [position, setPosition] = useState([0, 0]);
   const [message, setMessage] = useState("");
   const [hasKey, setHasKey] = useState(false);
+  const [moves, setMoves] = useState([]);
 
   useEffect(() => {
     const fetchMaze = async () => {
@@ -22,11 +23,11 @@ const MazeGame = ({ mazeId }) => {
         const response = await fetch(`http://localhost:8000/mazes/${mazeId}`);
         if (!response.ok) throw new Error("Failed to fetch maze");
         const data = await response.json();
-        // console.log(data);
         setMaze(data.grid);
         setPosition([0, 0]);
         setHasKey(false);
         setMessage("");
+        setMoves([]);
       } catch (err) {
         console.error(err);
         setMessage("Error loading maze");
@@ -56,7 +57,7 @@ const MazeGame = ({ mazeId }) => {
         newRow < 0 ||
         newCol < 0 ||
         newRow >= maze.length ||
-        newCol >= maze.length
+        newCol >= maze[0].length
       ) {
         setMessage("Out of bounds!");
         return;
@@ -64,26 +65,35 @@ const MazeGame = ({ mazeId }) => {
 
       const tile = maze[newRow][newCol];
 
-      // Wall check
+      // Wall or locked door check
       if (tile === "W") {
         setMessage("Blocked by wall!");
         return;
       }
-
-      // Door check
       if (tile === "D" && !hasKey) {
         setMessage("The door is locked. You need a key!");
         return;
       }
 
-      // Check if the player is on a portal
+      // Update position first
+      setPosition([newRow, newCol]);
+
+      // Record the move immediately
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        setMoves((prev) => {
+          const newMoves = [...prev, e.key];
+          console.log(newMoves);
+          return newMoves;
+        });
+      }
+
+      // Portal check
       if (tile === "P1") {
         const destinationCoords = findPortal(maze, "P2");
         setPosition(destinationCoords);
         setMessage("Teleported to P2!");
         return;
       }
-
       if (tile === "P2") {
         const destinationCoords = findPortal(maze, "P1");
         setPosition(destinationCoords);
@@ -95,23 +105,44 @@ const MazeGame = ({ mazeId }) => {
       if (tile === "K" && !hasKey) {
         setHasKey(true);
         setMessage("You collected the key!");
-      } else if (tile === "G") {
-        setMessage("You reached the goal!");
-      } else {
-        setMessage("");
       }
 
-      setPosition([newRow, newCol]);
+      // Goal check
+      if (tile === "G") {
+        setMessage("You reached the goal!");
+        submitMoves([...moves, e.key]);
+      }
+
+      // Reset message for normal tiles
+      if (tile !== "K" && tile !== "G") {
+        setMessage("");
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [position, hasKey, maze]);
+  }, [position, hasKey, maze, moves]);
+
+  const submitMoves = async (finalMoves) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/mazes/${mazeId}/verify`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ moves: finalMoves || moves }),
+        }
+      );
+      const result = await response.json();
+      setMessage(result.message);
+    } catch (err) {
+      console.error("Error submitting moves:", err);
+      setMessage("Failed to verify maze");
+    }
+  };
 
   return (
     <div>
-      <h2>Maze</h2>
-
       <div>
         {maze.map((row, rowIndex) => (
           <div key={rowIndex}>

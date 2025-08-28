@@ -7,6 +7,8 @@ def seed():
 
     db = SessionLocal()
 
+    # update with procedurally generated mazes if I have time 
+
     maze1 = Maze(
         name="Maze 1",
         grid=[
