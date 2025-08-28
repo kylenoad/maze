@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import MazeGame from "./Maze";
+import '../App.css'
+
 
 const Dashboard = () => {
   const [selectedMazeId, setSelectedMazeId] = useState(null);
@@ -10,7 +12,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className="dashboard-container"> 
       <h1>Maze Dashboard</h1>
       <button onClick={handleLogout}>Logout</button>
       <div>
