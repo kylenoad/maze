@@ -111,7 +111,7 @@ pytest
 
 # Use of AI
 
-I used AI to clarify concepts and debug specific parts of the project, especially around authentication. It also supported areas I was less familiar with, such as setting up CORS, configuring environment variables and dependencies, creating Docker and YAML configuration files, and scaffolding boilerplate for auth.py.
+I used AI to clarify concepts and debug specific parts of the project, especially around authentication. It also supported areas I was less familiar with, such as setting up CORS, configuring environment variables and dependencies, creating Docker and YAML configuration files, and scaffolding boilerplate.
 
 # My approach
 
